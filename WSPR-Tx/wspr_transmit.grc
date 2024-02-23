@@ -1,0 +1,470 @@
+options:
+  parameters:
+    author: ''
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: ''
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: wspr_transmit
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: Not titled yet
+    window_size: (1000,1000)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '32000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [184, 12]
+    rotation: 0
+    state: enabled
+- name: blocks_char_to_float_0
+  id: blocks_char_to_float
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    scale: '1'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [992, 272.0]
+    rotation: 0
+    state: true
+- name: blocks_char_to_float_1
+  id: blocks_char_to_float
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    scale: '1'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [992, 456.0]
+    rotation: 0
+    state: true
+- name: blocks_pack_k_bits_bb_0
+  id: blocks_pack_k_bits_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    k: '8'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [816, 264.0]
+    rotation: 0
+    state: true
+- name: blocks_throttle2_0
+  id: blocks_throttle2
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [576, 256.0]
+    rotation: 0
+    state: true
+- name: epy_block_0
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"\nAuthor : Mathieu Croizer alias Krounet : https://github.com/Krounet\n\
+      \nTranslate strings into the form CallSigns+Locations+Power to bytes for WSPR\
+      \ transmission\n\"\"\"\n\nimport numpy as np\nfrom gnuradio import gr\nimport\
+      \ pmt\nimport re\nimport time\n\n\ntxtCallsigns=''\ntxtLocation=''\ntxtPower=''\n\
+      \n\n###Coding Tables for Callsigns and Location. No table for Power\n\ncallsignsCoding={'0':0,'1':1,'2':2,3:'3','4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'A':10,'B':11,'C':12,'D':13,'E':14,'F':15,'G':16,'H':17,'I':18,\n\
+      \                 'J':19,'K':20,'L':21,'M':22,'N':23,'O':24,'P':25,'Q':26,'R':27,'S':28,'T':29,'U':30,'V':31,'W':32,'X':33,'Y':34,'Z':35,'\
+      \ ':36}\n\nlocationCoding={'0':0,'1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'A':0,'B':1,'C':2,'D':3,'E':4,'F':5,'G':6,'H':7,'I':8,\n\
+      \                'J':9,'K':10,'L':11,'M':12,'N':13,'O':14,'P':15,'Q':16,'R':17}\n\
+      \ \n\n\n\n\n\nclass mc_sync_block(gr.sync_block):\n    \"\"\"\n    Reads input\
+      \ from 3 message ports : 1 ports for radio operator Callsigns + 1 ports for\
+      \ Location in Maidenhead grid Locator format + 1 port for Power of the transmitter\
+      \ in dBm [0 to 60 dBm]\n    \"\"\"\n    def __init__(self):\n        gr.sync_block.__init__(self,name='WSPR\
+      \ code',in_sig=None,out_sig=[np.byte])\n        self.message_port_register_in(pmt.intern('Callsigns'))\n\
+      \        self.message_port_register_in(pmt.intern('Location'))\n        self.message_port_register_in(pmt.intern('Power_dBm'))\n\
+      \        self.set_msg_handler(pmt.intern('Callsigns'),self.handle_msg_Callsigns)\n\
+      \        self.set_msg_handler(pmt.intern('Location'),self.handle_msg_Location)\n\
+      \        self.set_msg_handler(pmt.intern('Power_dBm'),self.handle_msg_Power)\n\
+      \n\n    def handle_msg_Callsigns(self,msg):\n        global txtCallsigns\n \
+      \       txtCallsigns=pmt.symbol_to_string(msg)\n        print(\"debug \"+txtCallsigns)\
+      \ #debug\n        \n    def handle_msg_Location(self,msg):\n        global txtLocation\n\
+      \        txtLocation=pmt.symbol_to_string(msg)\n        print(\"debug \"+txtLocation)\
+      \ #debug\n\n    def handle_msg_Power(self,msg):\n        global txtPower\n \
+      \       txtPower=pmt.symbol_to_string(msg)\n        print(\"debug \"+txtPower)\
+      \ #debug\n\n\n    def transform_Callsigns(self):\n        global txtCallsigns\n\
+      \        global callsignsCoding\n        \"\"\"\n        Callsigns must be 6\
+      \ characters long.\n        1) If the second character is a number, a space\
+      \ must be introduced at the beginning. Ex : 'K1JT' become ' K1JT'\n        2)\
+      \ If Callsigns is less than 6 characters, even if a space is introduced at the\
+      \ beginnong, the chain must be completed with space. Ex : ' K1JT' become ' K1JT\
+      \ '\n        \"\"\"\n\n        if len(txtCallsigns)>6:\n            print(\"\
+      Error : Callsigns uses 6 characters max\")\n\n        if re.search('[0-9]',txtCallsigns)==None:\n\
+      \            print(\"Error : Callsigns must contained a number minimum\")\n\n\
+      \        if re.search('[0-9]',txtCallsigns[1]):\n            txtCallsigns='\
+      \ '+txtCallsigns # in WSPR transmission Callsigns must be in the format [A-Z][A-Z][0-9]XXX,\
+      \ with X = [A-Z] or [0-9] or space. If the second character is a number, a space\
+      \ is introduced at the beginning\n\n        if len(txtCallsigns)<6: #Complete\
+      \ Callsigns with space if txtCallsigns length <6\n            \n           \
+      \ for n in range(6-len(txtCallsigns)):\n                txtCallsigns=txtCallsigns+'\
+      \ '\n\n        \n        #Let's code the Callsigns in binary\n        n1=callsignsCoding[txtCallsigns[0]]\
+      \ \n        n2=n1*36+callsignsCoding[txtCallsigns[1]]\n        n3=n2*10+callsignsCoding[txtCallsigns[2]]\n\
+      \        n4=27*n3+callsignsCoding[txtCallsigns[3]]-10\n        n5=27*n4+callsignsCoding[txtCallsigns[4]]-10\n\
+      \        n6=27*n5+callsignsCoding[txtCallsigns[5]]-10\n        n=np.binary_repr(n6,28)\n\
+      \        return n\n\n\n\n    def transform_Location(self):\n        global txtLocation\n\
+      \        global locationCoding\n        global txtPower        \n        \n\
+      \        if len(txtLocation)>4:\n\n            print(\"Error : Location uses\
+      \ 4 characters max\")\n\n        if re.search('[A-Z]',txtLocation[0]) is None\
+      \ or re.search('[A-Z]',txtLocation[1]) is None:\n            print (\"Error\
+      \ : The two first characters of Locator must be letters\")\n\n\n        if re.search('[0-9]',txtLocation[2])\
+      \ is None or re.search('[0-9]',txtLocation[3]) is None:\n            print (\"\
+      Error : The two last characters of Locator must be numbers\")\n\n        #Let's\
+      \ code the Locator in binary\n        \n        m1=(179-10*locationCoding[txtLocation[0]]-locationCoding[txtLocation[2]])*180+10*locationCoding[txtLocation[1]]+locationCoding[txtLocation[3]]\n\
+      \        m=np.binary_repr(m1*128+int(txtPower)+64,22)\n        return m\n\n\n\
+      \n\n\n\n\n    def work(self,input_items,output_items):\n        \n        \"\
+      \"\"\n        What do we do here ? :\n\n        _ The Callsigns and the Location\
+      \ + Power are compressed in two integer N and M\n        _ N is calculated with\
+      \ these equations :\n            * N1 = [Ch1] -> [Chn] is the n character in\
+      \ decimal of the Callsigns modified by the function transform_Callsigns()\n\
+      \            * N2 = N1 * 36 + [Ch2]\n            * N3 = N2 * 10 + [Ch3]\n  \
+      \          * N4 = 27 * N3 + [Ch4] - 10\n            * N5 = 27 * N4 + [Ch5] -\
+      \ 10\n            * N = N6 = 27 * N5 + [Ch6] - 10\n\n        _ M is calculated\
+      \ with these equations :\n            * M1= (179 - 10 * [Loc1] - [Loc3]) * 180\
+      \ + 10 * [Loc2] + [Loc4] -> [Locn] is the n character in decimal of the Location\
+      \ modified by the function transform_Location()\n            * M = M1 * 128\
+      \ + [Pwr] + 64 -> [Pwr] is the power in dBm\n        \"\"\"\n        #time.sleep(5)\n\
+      \        codingN=self.transform_Callsigns()\n        codingM=self.transform_Location()\n\
+      \        #creating the 88 elements array to encode. The array will be packed\
+      \ then in 11 8-bits bytes array c[0] to c[6] will contain the informations to\
+      \ transmit.c[6] will contain the 2 two las bit of M and is completed by zeroes.\
+      \ c[7] to c[10] is filled with zeroes\n        #serializing N\n        n_Serial=np.byte([bit\
+      \ for bit in codingN])\n        #serializing M\n        m_Serial=np.hstack((np.byte([bit\
+      \ for bit in codingM]),np.byte([0,0,0,0,0,0])))\n        #creating c[7] to c[10]\n\
+      \        c7toc10bin=np.binary_repr(0,32)\n        c7toc10=np.byte([bit for bit\
+      \ in c7toc10bin])\n\n        #stacking the arrays\n        bitstreams=np.hstack((n_Serial,m_Serial,c7toc10))\n\
+      \        #output_items[0]=bitstreams\n        for x in range(len(bitstreams)):\n\
+      \            output_items[0]=bitstreams[x]\n            print(output_items[0])\n\
+      \        #print(\"length of the Block Output: \"+str(len(output_items[0])))\n\
+      \        return len(bitstreams)\n\n\n\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    _io_cache: '(''WSPR code'', ''mc_sync_block'', [], [(''Location'', ''message'',
+      1), (''Callsigns'', ''message'', 1), (''Power_dBm'', ''message'', 1)], [(''0'',
+      ''byte'', 1)], ''\n    Reads input from 3 message ports : 1 ports for radio
+      operator Callsigns + 1 ports for Location in Maidenhead grid Locator format
+      + 1 port for Power of the transmitter in dBm [0 to 60 dBm]\n    '', [])'
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [368, 240.0]
+    rotation: 0
+    state: true
+- name: qtgui_edit_box_msg_0
+  id: qtgui_edit_box_msg
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    gui_hint: ''
+    is_pair: 'False'
+    is_static: 'True'
+    key: ''
+    label: Power
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: string
+    value: '10'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [88, 136.0]
+    rotation: 0
+    state: true
+- name: qtgui_edit_box_msg_0_0
+  id: qtgui_edit_box_msg
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    gui_hint: ''
+    is_pair: 'False'
+    is_static: 'True'
+    key: ''
+    label: Locator
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: string
+    value: IN97
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [80, 264.0]
+    rotation: 0
+    state: true
+- name: qtgui_edit_box_msg_0_0_0
+  id: qtgui_edit_box_msg
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    gui_hint: ''
+    is_pair: 'False'
+    is_static: 'True'
+    key: ''
+    label: Callsign
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: string
+    value: K1JT
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [80, 432.0]
+    rotation: 0
+    state: true
+- name: qtgui_histogram_sink_x_0
+  id: qtgui_histogram_sink_x
+  parameters:
+    accum: 'True'
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'True'
+    axislabels: 'True'
+    bins: '1024'
+    color1: '"blue"'
+    color10: '"dark blue"'
+    color2: '"red"'
+    color3: '"green"'
+    color4: '"black"'
+    color5: '"cyan"'
+    color6: '"magenta"'
+    color7: '"yellow"'
+    color8: '"dark red"'
+    color9: '"dark green"'
+    comment: ''
+    grid: 'False'
+    gui_hint: ''
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"8 bits"'
+    nconnections: '1'
+    size: '1024'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    type: float
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    xmax: '16'
+    xmin: '-1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1200, 224.0]
+    rotation: 0
+    state: true
+- name: qtgui_histogram_sink_x_0_0
+  id: qtgui_histogram_sink_x
+  parameters:
+    accum: 'True'
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'True'
+    axislabels: 'True'
+    bins: '1024'
+    color1: '"blue"'
+    color10: '"dark blue"'
+    color2: '"red"'
+    color3: '"green"'
+    color4: '"black"'
+    color5: '"cyan"'
+    color6: '"magenta"'
+    color7: '"yellow"'
+    color8: '"dark red"'
+    color9: '"dark green"'
+    comment: ''
+    grid: 'False'
+    gui_hint: ''
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"1 bits"'
+    nconnections: '1'
+    size: '1024'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    type: float
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    xmax: '16'
+    xmin: '-1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1200, 408.0]
+    rotation: 0
+    state: true
+
+connections:
+- [blocks_char_to_float_0, '0', qtgui_histogram_sink_x_0, '0']
+- [blocks_char_to_float_1, '0', qtgui_histogram_sink_x_0_0, '0']
+- [blocks_pack_k_bits_bb_0, '0', blocks_char_to_float_0, '0']
+- [blocks_throttle2_0, '0', blocks_char_to_float_1, '0']
+- [blocks_throttle2_0, '0', blocks_pack_k_bits_bb_0, '0']
+- [epy_block_0, '0', blocks_throttle2_0, '0']
+- [qtgui_edit_box_msg_0, msg, epy_block_0, Power_dBm]
+- [qtgui_edit_box_msg_0_0, msg, epy_block_0, Location]
+- [qtgui_edit_box_msg_0_0_0, msg, epy_block_0, Callsigns]
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.6.0
