@@ -157,10 +157,10 @@ class mc_sync_block(gr.sync_block):
         bitstreams=np.hstack((n_Serial,m_Serial,c7toc10))
         #output_items[0]=bitstreams
         for x in range(len(bitstreams)):
-            output_items[0]=bitstreams[x]
-            print(output_items[0])
+            output_items[0][x]=str(bitstreams[x])
+            #print(output_items[0][x])
         #print("length of the Block Output: "+str(len(output_items[0])))
-        return len(bitstreams)
+        return len(output_items[0])
 
 
 

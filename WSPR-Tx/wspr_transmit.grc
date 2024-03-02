@@ -193,9 +193,9 @@ blocks:
       \        c7toc10bin=np.binary_repr(0,32)\n        c7toc10=np.byte([bit for bit\
       \ in c7toc10bin])\n\n        #stacking the arrays\n        bitstreams=np.hstack((n_Serial,m_Serial,c7toc10))\n\
       \        #output_items[0]=bitstreams\n        for x in range(len(bitstreams)):\n\
-      \            output_items[0]=bitstreams[x]\n            print(output_items[0])\n\
+      \            output_items[0][x]=str(bitstreams[x])\n            #print(output_items[0][x])\n\
       \        #print(\"length of the Block Output: \"+str(len(output_items[0])))\n\
-      \        return len(bitstreams)\n\n\n\n"
+      \        return len(output_items[0])\n\n\n\n"
     affinity: ''
     alias: ''
     comment: ''
@@ -279,10 +279,9 @@ blocks:
     coordinate: [80, 432.0]
     rotation: 0
     state: true
-- name: qtgui_histogram_sink_x_0
-  id: qtgui_histogram_sink_x
+- name: qtgui_time_sink_x_0
+  id: qtgui_time_sink_x
   parameters:
-    accum: 'True'
     affinity: ''
     alias: ''
     alpha1: '1.0'
@@ -295,32 +294,33 @@ blocks:
     alpha7: '1.0'
     alpha8: '1.0'
     alpha9: '1.0'
-    autoscale: 'True'
+    autoscale: 'False'
     axislabels: 'True'
-    bins: '1024'
-    color1: '"blue"'
-    color10: '"dark blue"'
-    color2: '"red"'
-    color3: '"green"'
-    color4: '"black"'
-    color5: '"cyan"'
-    color6: '"magenta"'
-    color7: '"yellow"'
-    color8: '"dark red"'
-    color9: '"dark green"'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
     comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
     grid: 'False'
     gui_hint: ''
-    label1: ''
-    label10: ''
-    label2: ''
-    label3: ''
-    label4: ''
-    label5: ''
-    label6: ''
-    label7: ''
-    label8: ''
-    label9: ''
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
     legend: 'True'
     marker1: '-1'
     marker10: '-1'
@@ -332,9 +332,11 @@ blocks:
     marker7: '-1'
     marker8: '-1'
     marker9: '-1'
-    name: '"8 bits"'
+    name: '"Bytes"'
     nconnections: '1'
-    size: '1024'
+    size: '16'
+    srate: samp_rate
+    stemplot: 'False'
     style1: '1'
     style10: '1'
     style2: '1'
@@ -345,6 +347,12 @@ blocks:
     style7: '1'
     style8: '1'
     style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
     type: float
     update_time: '0.10'
     width1: '1'
@@ -357,19 +365,20 @@ blocks:
     width7: '1'
     width8: '1'
     width9: '1'
-    xmax: '16'
-    xmin: '-1'
+    ylabel: Amplitude
+    ymax: '256'
+    ymin: '-256'
+    yunit: '""'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1200, 224.0]
+    coordinate: [1168, 256.0]
     rotation: 0
     state: true
-- name: qtgui_histogram_sink_x_0_0
-  id: qtgui_histogram_sink_x
+- name: qtgui_time_sink_x_0_0
+  id: qtgui_time_sink_x
   parameters:
-    accum: 'True'
     affinity: ''
     alias: ''
     alpha1: '1.0'
@@ -382,32 +391,33 @@ blocks:
     alpha7: '1.0'
     alpha8: '1.0'
     alpha9: '1.0'
-    autoscale: 'True'
+    autoscale: 'False'
     axislabels: 'True'
-    bins: '1024'
-    color1: '"blue"'
-    color10: '"dark blue"'
-    color2: '"red"'
-    color3: '"green"'
-    color4: '"black"'
-    color5: '"cyan"'
-    color6: '"magenta"'
-    color7: '"yellow"'
-    color8: '"dark red"'
-    color9: '"dark green"'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
     comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
     grid: 'False'
     gui_hint: ''
-    label1: ''
-    label10: ''
-    label2: ''
-    label3: ''
-    label4: ''
-    label5: ''
-    label6: ''
-    label7: ''
-    label8: ''
-    label9: ''
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
     legend: 'True'
     marker1: '-1'
     marker10: '-1'
@@ -419,9 +429,11 @@ blocks:
     marker7: '-1'
     marker8: '-1'
     marker9: '-1'
-    name: '"1 bits"'
+    name: '"Bits"'
     nconnections: '1'
-    size: '1024'
+    size: '16'
+    srate: samp_rate
+    stemplot: 'False'
     style1: '1'
     style10: '1'
     style2: '1'
@@ -432,6 +444,12 @@ blocks:
     style7: '1'
     style8: '1'
     style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
     type: float
     update_time: '0.10'
     width1: '1'
@@ -444,19 +462,21 @@ blocks:
     width7: '1'
     width8: '1'
     width9: '1'
-    xmax: '16'
-    xmin: '-1'
+    ylabel: Amplitude
+    ymax: '2'
+    ymin: '-1'
+    yunit: '""'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1200, 408.0]
+    coordinate: [1168, 416.0]
     rotation: 0
     state: true
 
 connections:
-- [blocks_char_to_float_0, '0', qtgui_histogram_sink_x_0, '0']
-- [blocks_char_to_float_1, '0', qtgui_histogram_sink_x_0_0, '0']
+- [blocks_char_to_float_0, '0', qtgui_time_sink_x_0, '0']
+- [blocks_char_to_float_1, '0', qtgui_time_sink_x_0_0, '0']
 - [blocks_pack_k_bits_bb_0, '0', blocks_char_to_float_0, '0']
 - [blocks_throttle2_0, '0', blocks_char_to_float_1, '0']
 - [blocks_throttle2_0, '0', blocks_pack_k_bits_bb_0, '0']
